@@ -19,29 +19,7 @@ class Mon(models.Model):
     attack = models.IntegerField()
     defense = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add = True)
-    updated_at = models.DateTimefield(auto_now = True)
-
-class Char(models.Model):
-    name = models.CharField(max_length=255)
-    job = models.CharField(max_length=255)
-    experience = models.IntegerField()
-    level = models.IntegerField()
-    vitality = models.IntegerField()
-    attack = models.IntegerField()
-    defense = models.IntegerField()
-    objects = CharManager()
-    created_at = models.DateTimeField(auto_now_add = True)
-    updated_at = models.DateTimefield(auto_now = True)
-
-class User(models.Model):
-    username = models.CharlField(max_length=255)
-    email = models.CharField(max_length=255)
-    password = models.CharField(max_length=255)
-    active_char = models.ForeignKey(Char, related_name="user")
-    dead_chars = models.ManyToManyField(Char, related_name="user")
-    objects = UserManager()
-    created_at = models.DateTimeField(auto_now_add = True)
-    updated_at = models.DateTimefield(auto_now = True)
+    updated_at = models.DateTimeField(auto_now = True)
 
 class Item(models.Model):
     gold = models.IntegerField()
@@ -49,4 +27,28 @@ class Item(models.Model):
     armor = models.CharField(max_length=255)
     potion = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add = True)
-    updated_at = models.DateTimefield(auto_now = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+class Char(models.Model):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    job = models.CharField(max_length=255)
+    experience = models.IntegerField()
+    level = models.IntegerField()
+    vitality = models.IntegerField()
+    attack = models.IntegerField()
+    defense = models.IntegerField()
+    inventory = models.ManyToManyField(Item, related_name="characters")
+    objects = CharManager()
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+class User(models.Model):
+    username = models.CharField(max_length=255)
+    email = models.CharField(max_length=255)
+    password = models.CharField(max_length=255)
+    active_char = models.ForeignKey(Char, related_name="active_user")
+    dead_chars = models.ManyToManyField(Char, related_name="dead_user")
+    objects = UserManager()
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
