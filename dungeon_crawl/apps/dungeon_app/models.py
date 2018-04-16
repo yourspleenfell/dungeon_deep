@@ -102,10 +102,13 @@ class Mon(models.Model):
     updated_at = models.DateTimeField(auto_now = True)
 
 class Item(models.Model):
-    gold = models.IntegerField()
-    weapon = models.CharField(max_length=255)
-    armor = models.CharField(max_length=255)
-    potion = models.CharField(max_length=255)
+    name = models.CharField(max_length = 255)
+    cost = models.IntegerField()
+    jobs = models.CharField(max_length = 255)
+    vitality = models.IntegerField()
+    defense = models.IntegerField()
+    attack_max = models.IntegerField()
+    attack_min = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
 
@@ -121,6 +124,8 @@ class Char(models.Model):
     attack_max = models.IntegerField()
     defense = models.IntegerField()
     gold = models.IntegerField()
+    armor = models.ForeignKey(Item, related_name="armor_wearers")
+    weapon = models.ForeignKey(Item, related_name="weapon_wielders")
     inventory = models.ManyToManyField(Item, related_name="characters")
     objects = CharManager()
     created_at = models.DateTimeField(auto_now_add = True)
