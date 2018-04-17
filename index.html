@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Dungeon Deep</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+        <script src="main.js"></script>
+    </head>
+    <body>
+        <h1>Dungeon Deep!</h1>
+        <h3>Registration</h3>
+            <form action='/register' method='POST'>
+                {% csrf_token %}
+                <p>First Name:<input type="text" name="first_name" id="first_name"></label></p>
+                <p>Last Name:<input type="text" name="last_name" id="last_name"></label></p>
+                <p>Email: <input type="text" name="email" id="email"></p>
+                <p>Username:<input type="text" name="username" id="username"></label></p>
+                <p>Password:<input type="password" name="password" id="password"></label></p>
+                <p>Confirm Password:<input type="password" name="confirm_password" id="confirm_password"></label></p>
+                <p><input type="submit" value="Register"></p>
+            </form>
+            <form action='/login' method='POST'>
+                {% csrf_token %}
+                <p>Username:<input type='text' name='username' id='username'></label></p>
+                <p>Password::<input type='password' name='password' id='password'></label></p>
+                <p><input type='submit' value='Login'></p>
+            </form>
+            <body>
+                <form action="/create" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="name" placeholder="Character name">
+                    <select name="job">
+                        <option value="Knight">Knight</option>
+                    </select>
+                    <input type="submit" name="submit" value="Create Character">
+                </form>
+            {% if messages %}
+            {% for message in messages %}
+            <h3>{% if message.tags %} {% endif %}{{ message }}</h3>
+            {% endfor %}
+            {% endif %}
+    </body>
+</html>
