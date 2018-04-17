@@ -1,69 +1,143 @@
 from __future__ import unicode_literals
 from django.db import models
-import random
+import random, bcrypt, re
+
+EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
+NAME_REGEX = re.compile(r'^[a-zA-Z]+$')
+PWD_REGEX = re.compile(r'(?=.*[A-Z])(?=.*[0-9])')
 
 class UserManager(models.Manager):
-    print "hello"
+    def register(self, postData):
+        errors = {}
+        first = postData['first_name']
+        last = postData['last_name']
+        username = postData['username']
+        email = postData['email']
+        pwd = postData['password']
+        con_pwd = postData['confirm_password']
+        hash_pwd = bcrypt.hashpw(pwd.encode(),bcrypt.gensalt())
+        if len(first) < 3:
+            errors['first_name'] = 'First name must be at least 3 characters'
+        elif not first.isalpha():
+            errors['first_name'] = 'First name can consist of only letters'
+        if len(last) < 3:
+            errors['last_name'] = 'Last name must be at least 3 characters'
+        elif not last.isalpha():
+            errors['last_name'] = 'Last name can consist of only letters'
+        if len(username) < 6:
+            errors['username_reg'] = 'Username must be at least 6 characters.'
+        elif len(self.filter(username=username)) > 0:
+            errors['username_reg'] = 'Username already taken'
+        if len(email) is 0:
+            errors['email_reg'] = 'You must enter an email address'
+        elif not EMAIL_REGEX.match(email):
+            errors['email_reg'] = 'Email must follow standard format'
+        elif len(self.filter(email=email)) > 0:
+            errors['email_reg'] = 'Email already taken' 
+        if len(pwd) < 8:
+            errors['password_reg'] = 'Password must be at least eight characters.'
+        elif not PWD_REGEX.match(pwd):
+            errors['password_reg'] = 'Password must contain one number and one capital letter'
+        elif con_pwd != pwd:
+            errors['password_reg'] = 'Passwords must match'
+        if len(errors) > 0:
+            return (False, errors)
+        else:
+            new_user = self.create(
+                first_name = first,
+                last_name = last,
+                username = username,
+                email = email,
+                password = hash_pwd,
+            )
+            return (True, new_user)
+    def login(self,postData):      
+        user = self.filter(username = postData['username'])
+        errors = {}
+        if not user:
+            errors['username'] = 'Username not valid.' 
+        if user and not bcrypt.checkpw(postData['password'].encode(), user[0].password.encode()):
+            errors['password'] = 'Incorrect password.'
+        if len(errors) > 0:
+            return (False, errors)
+        else:
+            return (True, self.get(username=postData['username']))
 
 class CharManager(models.Manager):
-    def char_creation(self, postData):
-        print postData['job']
-        if postData['job'] == 'Wizard':
+    def char_creation(self, postData, user_id):
+        errors = {}
+        name = postData['name']
+        job = postData['job']
+        user = User.objects.get(id=user_id)
+        if len(name) < 2:
+            errors['char_name'] = 'Character name must be at least 2 characters'
+        elif len(self.filter(name=name)) > 0:
+            errors['char_name'] = 'Character name already taken'
+        if len(errors) > 0:
+            return (False, errors)
+        if job == 'Wizard':
             new_char = self.create(
-                name = postData['name'],
-                job = postData['job'],
+                name = name,
+                job = job,
                 experience = 0,
                 exp_to_level = 100,
                 level = 1,
-                vitality = 50,
+                max_vitality = 50,
+                current_vitality = 50,
                 attack_min = 2,
                 attack_max = 5,
                 defense = 1,
                 gold = 0,
             )
-            return new_char
-        elif postData['job'] == 'Knight':
+            return (True, new_char)
+        elif job == 'Knight':
             new_char = self.create(
-                name = postData['name'],
-                job = postData['job'],
+                name = name,
+                job = job,
                 experience = 0,
                 exp_to_level = 100,
                 level = 1,
-                vitality = 100,
+                max_vitality = 100,
+                current_vitality = 100,
                 attack_min = 1,
                 attack_max = 3,
                 defense = 4,
                 gold = 0,
+                armor = Item.objects.get(name='None'),
+                weapon = Item.objects.get(name='None'),
+                active_user = user,
             )
-            return new_char
-        elif postData['job'] == 'Archer':
+            return (True, new_char)
+        elif job == 'Archer':
             new_char = self.create(
-                name = postData['name'],
-                job = postData['job'],
+                name = name,
+                job = job,
                 experience = 0,
                 exp_to_level = 100,
                 level = 1,
-                vitality = 70,
+                max_vitality = 70,
+                current_vitality = 70,
                 attack_min = 1,
                 attack_max = 4,
                 defense = 2,
                 gold = 0,
             )
-            return new_char
-        elif postData['job'] == 'Monk':
+            return (True, new_char)
+        elif job == 'Monk':
             new_char = self.create(
-                name = postData['name'],
-                job = postData['job'],
+                name = name,
+                job = job,
                 experience = 0,
                 exp_to_level = 100,
                 level = 1,
-                vitality = 85,
+                max_vitality = 85,
+                current_vitality = 85,
                 attack_min = 2,
                 attack_max = 3,
                 defense = 3,
                 gold = 0,
             )
-            return new_char
+            return (True, new_char)
     def level_up(self, id):
         char = self.get(id=id)
         char.level += 1
@@ -80,13 +154,12 @@ class CharManager(models.Manager):
         char = self.get(id=char_id)
         char_dmg = random.randint(char.attack_min, char.attack_max)
         mon_dmg = (random.randint(monster['attack_min'], monster['attack_max']) - char.defense)
-        monster['vitality'] -= char_dmg
+        monster['current_vitality'] -= char_dmg
         if mon_dmg > 0:
             char.current_vitality -= mon_dmg
             char.save()
-        if monster['vitality'] <= 0:
+        if monster['current_vitality'] <= 0:
             char.experience += random.randint(90, 100)
-            # char.monsters_killed.add(monster)
             char.save()
         if char.experience >= char.exp_to_level:
             Char.objects.level_up(char.id)
@@ -98,17 +171,32 @@ class Mon(models.Model):
     vitality = models.IntegerField()
     attack_min = models.IntegerField()
     attack_max = models.IntegerField()
+    image = models.ImageField(upload_to='monsters')
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
 
 class Item(models.Model):
     name = models.CharField(max_length = 255)
     cost = models.IntegerField()
+    type = models.CharField(max_length=255)
     jobs = models.CharField(max_length = 255)
     vitality = models.IntegerField()
     defense = models.IntegerField()
     attack_max = models.IntegerField()
     attack_min = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+class User(models.Model):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    username = models.CharField(max_length=255)
+    email = models.CharField(max_length=255)
+    password = models.CharField(max_length=255)
+    total_dmg_dealt = models.IntegerField(blank=True, default=0)
+    total_dmg_taken = models.IntegerField(blank=True, default=0)
+    monsters_killed = models.ManyToManyField(Mon, related_name="slayers", blank=True, default='')
+    objects = UserManager()
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
 
@@ -127,21 +215,8 @@ class Char(models.Model):
     armor = models.ForeignKey(Item, related_name="armor_wearers")
     weapon = models.ForeignKey(Item, related_name="weapon_wielders")
     inventory = models.ManyToManyField(Item, related_name="characters")
+    active_user = models.ForeignKey(User, related_name="active_char")
+    deaths = models.ManyToManyField(User, related_name="dead_chars")
     objects = CharManager()
-    created_at = models.DateTimeField(auto_now_add = True)
-    updated_at = models.DateTimeField(auto_now = True)
-
-class User(models.Model):
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    username = models.CharField(max_length=255)
-    email = models.CharField(max_length=255)
-    password = models.CharField(max_length=255)
-    active_char = models.ForeignKey(Char, related_name="active_user")
-    dead_chars = models.ManyToManyField(Char, related_name="dead_user")
-    total_dmg_dealt = models.IntegerField()
-    total_dmg_taken = models.IntegerField()
-    monsters_killed = models.ManyToManyField(Mon, related_name="slayers")
-    objects = UserManager()
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)

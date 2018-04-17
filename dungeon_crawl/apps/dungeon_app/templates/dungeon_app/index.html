@@ -4,27 +4,101 @@
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Dungeon Deep</title>
+        <title>Dungeon Deep | Welcome</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-        <script src="main.js"></script>
+        <link rel="stylesheet" href="{% static 'dungeon_app/css/materialize.css' %}" media="screen">
+        <script src="{% static 'dungeon_app/js/materialize.js' %}"></script>
     </head>
     <body>
-        <form action="/create" method="post">
-            {% csrf_token %}
-            <label for="first_name"></label>
-            <p>First Name:<input type="text" name="first_name" id="first_name"></label></p>
-            <p>Last Name:<input type="text" name="last_name" id="last_name"></label></p>
-            <p>Email: <input type="text" name="email" id="email"></p>
-            <p>Username:<input type="text" name="username" id="username"></label></p>
-            <p>Password:<input type="password" name="password" id="password"></label></p>
-            <p>Confirm Password:<input type="password" name="confirmed_password" id="confirmed_password"></label></p>
-            <p><input type="submit" value="Register"></p>
-            <input type="text" name="name" placeholder="Character name">
-            <select name="job">
-                <option value="Knight">Knight</option>
-            </select>
-            <input type="submit" name="submit" value="Create Character">
-        </form>
+        <div class="row">
+            <div class="col s12">
+                <div class="container">
+                    <h1>Welcome to Dungeon Deep</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row card-panel">
+            <div class="col s6">
+                <h2>Register:</h2>
+                <form action='/register' method='POST' class="">
+                    {% csrf_token %}
+                    <div class="input-field">
+                        <input id="first_name" type="text" name="first_name">
+                        <label for="first_name">First Name</label>
+                    </div>
+                    {% for error in messages %}
+                        {% if 'first_name' in error.extra_tags %}
+                            <span class="red-text text-accent-2">{{ error }}</span>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="input-field">
+                        <input id="last_name" type="text" name="last_name">
+                        <label for="last_name">Last Name</label>
+                    </div>
+                    {% for error in messages %}
+                        {% if 'last_name' in error.extra_tags %}
+                            <span class="red-text text-accent-2">{{ error }}</span>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="input-field">
+                        <input id="username" type="text" name="username">
+                        <label for="username">Username</label>
+                    </div>
+                    {% for error in messages %}
+                        {% if 'username_reg' in error.extra_tags %}
+                            <span class="red-text text-accent-2">{{ error }}</span>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="input-field">
+                        <input id="email" type="email" name="email">
+                        <label for="email">Email</label>
+                    </div>
+                    {% for error in messages %}
+                        {% if 'email_reg' in error.extra_tags %}
+                            <span class="red-text text-accent-2">{{ error }}</span>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="input-field">
+                        <input id="password" type="password" name="password">
+                        <label for="password">Password</label>
+                    </div>
+                    {% for error in messages %}
+                        {% if 'password_reg' in error.extra_tags %}
+                            <span class="red-text text-accent-2">{{ error }}</span>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="input-field">
+                        <input id="confirm_password" type="password" name="confirm_password">
+                        <label for="confirm_password">Confirm Password</label>
+                    </div>
+                    <input type="submit" value="Register">
+                </form>
+            </div>
+            <div class="col s6">
+                <h2>Login:</h2>
+                <form action='/login' method='POST'>
+                    {% csrf_token %}
+                    <div class="input-field">
+                        <input id="username" type="text" class="validate" name="username">
+                        <label for="username">Username</label>
+                    </div>
+                    {% for error in messages %}
+                        {% if 'username_log' in error.extra_tags %}
+                            <span class="red-text text-accent-2">{{ error }}</span>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="input-field">
+                        <input id="password" type="password" class="validate" name="password">
+                        <label for="password">Password</label>
+                    </div>
+                    {% for error in messages %}
+                        {% if 'password_log' in error.extra_tags %}
+                            <span class="red-text text-accent-2">{{ error }}</span>
+                        {% endif %}
+                    {% endfor %}
+                    <input type="submit" value="Login">
+                </form>
+            </div>
+        </div>
     </body>
 </html>

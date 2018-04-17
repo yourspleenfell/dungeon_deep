@@ -4,14 +4,69 @@
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Dungeon Deep</title>
+        <title>Dungeon Deep | Dashboard</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-        <script src="main.js"></script>
+        <link rel="stylesheet" href="{% static 'dungeon_app/css/materialize.css' %}" media="screen">
+        <script src="{% static 'dungeon_app/js/materialize.js' %}"></script>
     </head>
     <body>
-        <p>
-            <a href="/battle">Kick some ass, maybe</a>
-        </p>
+        <div class="row card">
+            <div class="progress">
+                <div class="determinate" style="width: {{ exp_percent }}%"></div>
+            </div>
+            <div class="container">
+                <div class="col s9">
+                        {% if character.job == 'Archer' %}
+                            <img src="{% static 'dungeon_app/img/archer/sprite-healthy.gif' %}" alt="Knight Avatar" class="avatar">
+                        {% elif character.job == 'Knight' %}
+                            <img src="{% static 'dungeon_app/img/knight/sprite-healthy.gif' %}" alt="Knight Avatar" class="avatar">
+                        {% elif character.job == 'Monk' %}
+                            <img src="{% static 'dungeon_app/img/monk/sprite-healthy.gif' %}" alt="Knight Avatar" class="avatar">
+                        {% elif character.job == 'Wizard' %}
+                            <img src="{% static 'dungeon_app/img/wizard/sprite-healthy.gif' %}" alt="Knight Avatar" class="avatar">
+                        {% endif %}
+                    <ul class="list-inline">
+                        <li>LV: {{ character.level }}</li>
+                        <li>XP: {{ character.experience }} / {{ character.exp_to_level }}</li>
+                        <li><img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Attack" class="head_icon"> {{ character.current_vitality }} / {{ character.max_vitality }}</li> 
+                        <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon">  {{ character.attack_min }} - {{ character.attack_max }}</li> 
+                        <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon">  {{ character.defense }}</li> 
+                        <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ character.gold }}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col s3">
+                <form action="/submit" class="list-inline" method="post">
+                    {% csrf_token %}
+                    <input type="submit" name="submit" value="Shop">
+                    <input type="submit" name="submit" value="Play">
+                    <input type="submit" name="submit" value="Log Out">
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="container">
+                <div class="col s6">
+                    <h2>{{ user.username }} Stats:</h2>
+                    <ul>
+                        <li>Monsters Killed: {{ monsters_killed}}</li>
+                        <li>Bosses Killed: {{ bosses_killed }}</li> 
+                        <li>Total Damage Dealt: {{ user.total_dmg_dealt }}</li>
+                        <li>Total Damage Taken: {{ user.total_dmg_taken }}</li>
+                        <li>Deaths: {{ user.dead_chars.all.count }}</li>
+                    </ul>
+                </div>
+                <div class="col s6">
+                    <h2>Leaderboard</h2>
+                    <ol>
+                        <li> PLACEHOLDER Level: PLACEHOLDER</li>
+                        <li> PLACEHOLDER Level: PLACEHOLDER</li>
+                        <li> PLACEHOLDER Level: PLACEHOLDER</li>
+                        <li> PLACEHOLDER Level: PLACEHOLDER</li>
+                        <li> PLACEHOLDER Level: PLACEHOLDER</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
