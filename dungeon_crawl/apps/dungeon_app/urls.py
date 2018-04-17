@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.conf.urls.static import static
 from django.conf import settings
 from . import views
 
@@ -13,3 +14,6 @@ urlpatterns = [
     url(r'^battle/(?P<floor>\d+)/(?P<room>\d+)$', views.battle, name="battle"),
     url(r'^dungeon/(?P<floor>\d+)/(?P<room>\d+)$', views.dungeon, name="dungeon")
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

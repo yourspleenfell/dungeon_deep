@@ -20,7 +20,7 @@
                 <div class="determinate" style="width: {{ exp_percent }}%"></div>
             </div>
             <div class="container">
-                <div class="col s9">
+                <div class="col s12">
                     {% if character.job == 'Archer' %}
                         <img src="{% static 'dungeon_app/img/archer/sprite-healthy.gif' %}" alt="Knight Avatar" class="avatar">
                     {% elif character.job == 'Knight' %}
@@ -39,14 +39,6 @@
                         <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ character.gold }}</li>
                     </ul>
                 </div>
-                <div class="col s3">
-                    <form action="/submit" class="list-inline" method="post">
-                        {% csrf_token %}
-                        <input type="submit" name="submit" value="Shop">
-                        <input type="submit" name="submit" value="Play">
-                        <input type="submit" name="submit" value="Log Out">
-                    </form>
-                </div>
             </div>
         </div>
         <div class="row">
@@ -63,6 +55,7 @@
                     <div class="grey darken-2 white-text room">
                         {% if current_room == '1' %}
                             {% if 'monster_name' in request.session %}
+                                <img src="{{request.session.monster_image}}" alt="{{ request.session.monster_name}}">
                                 {{ request.session.monster_name }}<br>
                                 <img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Health" class="head_icon"> {{ request.session.current_vitality }}/{{ request.session.vitality }}<br>
                                 <a href="/battle/{{ current_floor }}/{{ current_room }}">Battle</a>

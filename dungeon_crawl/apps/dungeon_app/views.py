@@ -101,6 +101,7 @@ def battle(request, floor, room):
         request.session['monster_name'] = mon.name
         request.session['attack_min'] = mon.attack_min + char.level
         request.session['attack_max'] = mon.attack_max + char.level
+        request.session['monster_image'] = mon.image.url
     monster = {
         'name' : request.session['monster_name'],
         'vitality': request.session['vitality'],
@@ -123,6 +124,5 @@ def battle(request, floor, room):
     # del request.session['attack_max']
     # del request.session['vitality']
     # del request.session['name']
-    print request.session['mon_image']
     request.session.modified = True
     return redirect(reverse('dungeon:dungeon', kwargs={'floor': floor, 'room': room}))

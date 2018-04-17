@@ -184,6 +184,7 @@ class Item(models.Model):
     defense = models.IntegerField()
     attack_max = models.IntegerField()
     attack_min = models.IntegerField()
+    image = models.ImageField(upload_to='items')
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
 
