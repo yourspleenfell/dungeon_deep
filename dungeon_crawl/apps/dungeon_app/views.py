@@ -69,16 +69,15 @@ def dashboard(request):
 
 def submit(request):
     if request.POST['submit'] == 'Shop':
-        print request.POST['submit']
         return redirect('/dashboard')
     elif request.POST['submit'] == 'Play':
-        print request.POST['submit']
         return redirect(reverse('dungeon:dungeon', kwargs={'floor': 1, 'room': 1}))
     elif request.POST['submit'] == 'Log Out':
-        print request.POST['submit']
         return redirect('/dashboard')
 
 def dungeon(request, floor, room):
+    if 'img_log' not in request.session:
+        request.session['img_log'] = []
     char = Char.objects.get(id=request.session['char_id'])
     user = User.objects.get(id=request.session['user_id'])
     if 'log' not in request.session:
@@ -86,9 +85,11 @@ def dungeon(request, floor, room):
     dungeon = {
         'current_floor' : floor,
         'current_room' : room,
+        'rooms' : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
         'character' : char,
         'exp_percent' : float(char.experience) / char.exp_to_level * 100,
     }
+
     return render(request, 'dungeon_app/dungeon.html', dungeon)
 
 def battle(request, floor, room):
@@ -96,11 +97,11 @@ def battle(request, floor, room):
     user = User.objects.get(id=request.session['user_id'])
     if 'vitality' not in request.session:
         mon = Mon.objects.get(id=random.randint(1, 1))
-        request.session['vitality'] = mon.vitality + char.level
-        request.session['current_vitality'] = mon.vitality + char.level
+        request.session['vitality'] = mon.vitality + (char.level * 2)
+        request.session['current_vitality'] = mon.vitality + (char.level * 2)
         request.session['monster_name'] = mon.name
-        request.session['attack_min'] = mon.attack_min + char.level
-        request.session['attack_max'] = mon.attack_max + char.level
+        request.session['attack_min'] = mon.attack_min + (char.level + 1)
+        request.session['attack_max'] = mon.attack_max + (char.level + 2)
         request.session['monster_image'] = mon.image.url
     monster = {
         'name' : request.session['monster_name'],

@@ -48,49 +48,26 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row dungeon">
             <div class="col s12">
                 <div class="container">
                     <h2>DUNGEON in progress </h2>
-                    <div class="grey darken-2 white-text room">
-                        {% if current_room == '1' %}
+                    {% for i in rooms %}
+                    <div class="card grey darken-2 white-text room">
+                        {% if current_room == i %}
                             {% if 'monster_name' in request.session %}
-                                <img src="{{request.session.monster_image}}" alt="{{ request.session.monster_name}}">
-                                {{ request.session.monster_name }}<br>
+                                <h6>{{ request.session.monster_name }}</h6>
+                                <img src="{{ request.session.monster_image }}" alt="{{ request.session.monster_name}}" class="monster">
                                 <img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Health" class="head_icon"> {{ request.session.current_vitality }}/{{ request.session.vitality }}<br>
                                 <a href="/battle/{{ current_floor }}/{{ current_room }}">Battle</a>
                             {% else %}
-                                <a href="/battle/{{ current_floor }}/{{ current_room }}">Battle</a>
+                                <a href="/battle/{{ current_floor }}/{{ current_room }}"><img src="{% static 'dungeon_app/img/dungeon/door-dark2.png' %}" alt="Door" class="door"></a>
                             {% endif %}
+                        {% else %}
+                        <p>???</p>
                         {% endif %}
                     </div>
-                    <div class="grey darken-2 white-text room">
-                        rawr
-                    </div>
-                    <div class="grey darken-2 white-text room">
-                        rawr
-                    </div>
-                    <div class="grey darken-2 white-text room">
-                        rawr
-                    </div>
-                    <div class="grey darken-2 white-text room">
-                        rawr
-                    </div>
-                    <div class="grey darken-2 white-text room">
-                        rawr
-                    </div>
-                    <div class="grey darken-2 white-text room">
-                        rawr
-                    </div>
-                    <div class="grey darken-2 white-text room">
-                        rawr
-                    </div>
-                    <div class="grey darken-2 white-text room">
-                        rawr
-                    </div>
-                    <div class="grey darken-2 white-text room">
-                        rawr
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
