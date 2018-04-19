@@ -15,23 +15,14 @@
                 <div class="determinate" style="width: {{ exp_percent }}%"></div>
             </div>
             <div class="container">
-                <div class="col s9">
-                        {% if character.job == 'Archer' %}
-                            <img src="{% static 'dungeon_app/img/archer/sprite-healthy.gif' %}" alt="Knight Avatar" class="avatar">
-                        {% elif character.job == 'Knight' %}
-                            <img src="{% static 'dungeon_app/img/knight/sprite-healthy.gif' %}" alt="Knight Avatar" class="avatar">
-                        {% elif character.job == 'Monk' %}
-                            <img src="{% static 'dungeon_app/img/monk/sprite-healthy.gif' %}" alt="Knight Avatar" class="avatar">
-                        {% elif character.job == 'Wizard' %}
-                            <img src="{% static 'dungeon_app/img/wizard/sprite-healthy.gif' %}" alt="Knight Avatar" class="avatar">
-                        {% endif %}
+                <div class="col s9"><img src="{{ char.job.image.url }}" alt="{{ char.job.name }} Avatar"class="avatar">
                     <ul class="list-inline">
-                        <li>LV: {{ character.level }}</li>
-                        <li>XP: {{ character.experience }} / {{ character.exp_to_level }}</li>
-                        <li><img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Attack" class="head_icon"> {{ character.current_vitality }} / {{ character.max_vitality }}</li> 
-                        <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon">  {{ character.attack_min }} - {{ character.attack_max }}</li> 
-                        <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon">  {{ character.defense }}</li> 
-                        <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ character.gold }}</li>
+                        <li>LV: {{ char.level }}</li>
+                        <li>XP: {{ char.experience }} / {{ char.exp_to_level }}</li>
+                        <li><img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Attack" class="head_icon"> {{ char.current_vitality }} / {{ char.max_vitality }}</li> 
+                        <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon">  {{ char.attack_min }} - {{ char.attack_max }}</li> 
+                        <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon">  {{ char.defense }}</li> 
+                        <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ char.gold }}</li>
                     </ul>
                 </div>
             </div>
@@ -49,11 +40,11 @@
                 <div class="col s6">
                     <h2>{{ user.username }} Stats:</h2>
                     <ul>
-                        <li>Monsters Killed: {{ monsters_killed }}</li>
-                        <li>Bosses Killed: {{ bosses_killed }}</li> 
+                        <li>Monsters Killed: {{ user.total_monsters_killed }}</li>
+                        <li>Bosses Killed: {{ user.total_bosses_killed }}</li> 
                         <li>Total Damage Dealt: {{ user.total_dmg_dealt }}</li>
                         <li>Total Damage Taken: {{ user.total_dmg_taken }}</li>
-                        <li>Deaths: {{ user.dead_chars.all.count }}</li>
+                        <li>Deaths: {{ user.characters.all.count }}</li>
                     </ul>
                 </div>
                 <div class="col s6">

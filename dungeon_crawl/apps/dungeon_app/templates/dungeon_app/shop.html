@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Dungeon Deep | Item Shop</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{% static 'dungeon_app/css/materialize.css' %}" media="screen">
+        <script src="{% static 'dungeon_app/js/materialize.js' %}"></script>
+    </head>
+    <body>
+        <div class="row card">
+            <div class="progress">
+                <div class="determinate" style="width: {{ exp_percent }}%"></div>
+            </div>
+            <div class="container">
+                <div class="col s9"><img src="{{ char.job.image.url }}" alt="{{ char.job.name }} Avatar"class="avatar">
+                    <ul class="list-inline">
+                        <li>LV: {{ char.level }}</li>
+                        <li>XP: {{ char.experience }} / {{ char.exp_to_level }}</li>
+                        <li><img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Attack" class="head_icon"> {{ char.current_vitality }} / {{ char.max_vitality }}</li> 
+                        <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon">  {{ char.attack_min }} - {{ char.attack_max }}</li> 
+                        <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon">  {{ char.defense }}</li> 
+                        <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ char.gold }}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col s3">
+                <form action="/submit" class="list-inline" method="post">
+                    {% csrf_token %}
+                    <input type="submit" name="submit" value="Shop">
+                    <input type="submit" name="submit" value="Play">
+                    <input type="submit" name="submit" value="Log Out">
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12">
+                <div class="container">
+                    <h1>Item Shop</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row shop">
+            <div class="col s12">
+                <div class="container">
+                    <h2>Consumables</h2>
+                    {% %}
+                    <div class="card grey darken-2 white-text room">
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/consumable/potion.gif' %}" alt="Consumable" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Attack" class="head_icon"> {{ Item.vitality }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Hi-Potion</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/consumable/hi_potion.gif' %}" alt="Consumable" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Attack" class="head_icon"> {{ Item.vitality }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>X-Potion</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/consumable/x_potion.gif' %}" alt="Consumable" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Attack" class="head_icon"> {{ Item.vitality }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <h2>Weapons</h2>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Defender</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/weapon/knight/defender.gif' %}" alt="Weapon" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Save the Queen</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/weapon/knight/save_the_queen.gif' %}" alt="Weapon" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Excalibur</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/weapon/knight/excalibur.gif' %}" alt="Weapon" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Serpent Staff</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/weapon/mage/serpent_staff.gif' %}" alt="Weapon" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Zeus Mace</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/weapon/mage/zeus_mace.gif' %}" alt="Weapon" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Golden Staff</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/weapon/mage/golden_staff.gif' %}" alt="Weapon" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Long Bow</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/weapon/archer/long_bow.gif' %}" alt="Weapon" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                            <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Mythril Bow</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/weapon/archer/mythril_bow.gif' %}" alt="Weapon" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Artemis Bow</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/weapon/archer/artemis_bow.gif' %}" alt="Weapon" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Bronze Armor</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/armor/knight/bronze_armor.gif' %}" alt="Armor" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon"> {{ Item.defense }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Mythril Armor</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/armor/knight/mythril_armor.gif' %}" alt="Armor" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon"> {{ Item.defense }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Mythril Armor</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/armor/knight/mythril_armor.gif' %}" alt="Armor" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon"> {{ Item.defense }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Mirror Mail</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/armor/knight/mirror_mail.gif' %}" alt="Armor" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon"> {{ Item.defense }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Hempen Robe</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/armor/mage/hempen_robe.gif' %}" alt="Armor" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon"> {{ Item.defense }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Wizard's Robe</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/armor/mage/wizards_robe.gif' %}" alt="Armor" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon"> {{ Item.defense }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Black Robe</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/armor/mage/black_robe.gif' %}" alt="Armor" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon"> {{ Item.defense }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Leather Plate</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/armor/archer/leather_plate.gif' %}" alt="Armor" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon"> {{ Item.defense }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Leather Clothing</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/armor/archer/leather_clothing.gif' %}" alt="Armor" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon"> {{ Item.defense }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Ring Mail</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/armor/archer/ring_mail.gif' %}" alt="Armor" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon"> {{ Item.defense }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Jujitsu Gi</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/armor/monk/jujitsu_gi.gif' %}" alt="Armor" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon"> {{ Item.defense }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                    <div class="card grey darken-2 white-text room">
+                        <p>Black Garb</p>
+                        <form action="/submit" class="list-inline" method="post">
+                            {% csrf_token %}
+                        <ul>
+                            <li><img src="{% static 'dungeon_app/img/armor/monk/black_garb.gif' %}" alt="Armor" class="Item"></li>
+                            <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon"> {{ Item.defense }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon"> {{ Item.attack_max }}</li>
+                            <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ Item.cost }}</li>
+                        </ul>
+                        <input type="submit" name="submit" value="Buy">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

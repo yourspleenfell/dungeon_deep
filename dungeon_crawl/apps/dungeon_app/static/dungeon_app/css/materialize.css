@@ -9061,18 +9061,24 @@ input[type=range].focused:focus:not(.active)::-ms-thumb {
   display: inline-block;
   padding: 5px;
   width: 120px;
-  height: 120px;
+  height: 130px;
   background: url('../img/dungeon/brick-sm.png');
   border: solid 1px #000;
 }
 .monster {
-  margin-right: 3px;
+  position: absolute;
+  left: 40px;
+  bottom: 5px;
   max-height: 60px;
   float: left;
 }
-.dungeon {
-  background: url('../img/dungeon/brick.png');
-}
 .door {
-  margin: 17px 22px 0px 22px;
+  position: absolute;
+  left: 26px;
+  top: 31px;
+}
+.door-open {
+  position: absolute;
+  left: 3px;
+  top: 31px;
 }

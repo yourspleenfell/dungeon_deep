@@ -12,7 +12,11 @@ urlpatterns = [
     url(r'^dashboard$', views.dashboard),
     url(r'^submit$', views.submit),
     url(r'^battle/(?P<floor>\d+)/(?P<room>\d+)$', views.battle, name="battle"),
-    url(r'^dungeon/(?P<floor>\d+)/(?P<room>\d+)$', views.dungeon, name="dungeon")
+    url(r'^treasure/(?P<floor>\d+)/(?P<room>\d+)$', views.treasure, name="treasure"),
+    url(r'^dungeon/(?P<floor>\d+)/(?P<room>\d+)$', views.dungeon, name="dungeon"),
+    url(r'^random/(?P<floor>\d+)/(?P<room>\d+)$', views.random_gen, name="random"),
+    url(r'^shop$', views.shop),
+    url(r'^upload$', views.model_form_upload, name="upload"),
 ]
 
 if settings.DEBUG:
