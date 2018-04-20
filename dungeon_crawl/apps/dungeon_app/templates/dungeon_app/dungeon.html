@@ -24,10 +24,14 @@
                     <ul class="list-inline">
                         <li>LV: {{ char.level }}</li>
                         <li>XP: {{ char.experience }} / {{ char.exp_to_level }}</li>
-                        <li><img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Attack" class="head_icon"> {{ char.current_vitality }} / {{ char.max_vitality }}</li> 
+                        <li><img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Health" class="head_icon"> {{ char.current_vitality }} / {{ char.max_vitality }}</li> 
                         <li><img src="{% static 'dungeon_app/img/header/atk.gif' %}" alt="Attack" class="head_icon">  {{ char.attack_min }} - {{ char.attack_max }}</li> 
                         <li><img src="{% static 'dungeon_app/img/header/def.gif' %}" alt="Defense" class="head_icon">  {{ char.defense }}</li> 
                         <li><img src="{% static 'dungeon_app/img/header/gold.png' %}" alt="Gold" class="head_icon"> {{ char.gold }}</li>
+                        <li></li>
+                        {% for item in inventory %}
+                        <li><img src="{{ item.image.url }}" alt="Gold" class="head_icon"> x {{ char.inventory.count }}</li>
+                        {% endfor %}
                     </ul>
                 </div>
             </div>
@@ -53,27 +57,35 @@
                     {% for room in rooms %}
                         <div class="card grey darken-2 white-text room">
                             {% if current_room == room %}
-                            {% if request.session.door_open %}
-                            hello
-                            {% endif %}
-                                {% if request.session.battle %}
+                                {% if request.session.event.1 %}
+                                    {% if not request.session.engaged %}
                                     <img src="{% static 'dungeon_app/img/dungeon/door-open.png' %}" alt="Open Door" class="door-open">
-                                    <a href="/battle/{{ current_floor }}/{{ current_room }}"><img src="{{ request.session.monster_image.0 }}" alt="{{ request.session.monster_name}}" class="monster"></a>
-                                    {{ request.session.monster_name }}<br>
-                                    <img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Health" class="head_icon"> {{ request.session.current_vitality }}/{{ request.session.vitality }}
-                                {% elif request.session.treasure %}
-                                    {% if not request.session.treasure_clicked %}
-                                        <img src="{% static 'dungeon_app/img/dungeon/door-open.png' %}" alt="Open Door" class="door-open">
-                                        <a href="/treasure/{{ current_floor }}/{{ current_room }}"><img src="{% static 'dungeon_app/img/treasure/chest.png' %}" alt="Treasure Chest" class="monster"></a>
-                                    {% else %}
-                                        <img src="{% static 'dungeon_app/img/dungeon/door-open.png' %}" alt="Open Door" class="door-open">
-                                        <a href="/treasure/{{ current_floor }}/{{ current_room }}"><img src="{% static 'dungeon_app/img/treasure/chest-open.png' %}" alt="Treasure Chest" class="monster"></a>
+                                    <a href="/treasure/{{ current_floor }}/{{ current_room }}"><img src="{% static 'dungeon_app/img/treasure/chest.png' %}" alt="Treasure Chest" class="monster"></a>
+                                    {% elif request.session.engaged %}
+                                    <img src="{% static 'dungeon_app/img/dungeon/door-open.png' %}" alt="Open Door" class="door-open">
+                                    <a href="/progress/{{ current_floor }}/{{ current_room }}"><img src="{% static 'dungeon_app/img/treasure/chest-open.png' %}" alt="Treasure Chest" class="monster"></a>
+                                    {% endif %}
+                                {% elif request.session.event.0 %}
+                                    {% if not request.session.engaged %}
+                                        <img src="{% static 'dungeon_app/img/dungeon/door-open.png' %}" alt="Open Door" class="door-open"> {{ event.name }}<br>
+                                        <img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Health" class="head_icon"> {{ event.current_vitality}} / {{ event.vitality }}
+                                        <a href="/battle/{{ current_floor }}/{{ current_room }}"><img src="{{ event.image.url }}" alt="{{ event.image.name }}" class="monster"></a>
+                                    {% elif request.session.engaged %}
+                                        {% if event.current_vitality is 0 %}
+                                            <img src="{% static 'dungeon_app/img/dungeon/door-open.png' %}" alt="Open Door" class="door-open"> {{ event.name }}<br>
+                                            <img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Health" class="head_icon"> {{ event.current_vitality}} / {{ event.vitality }}
+                                            <a href="/progress/{{ current_floor }}/{{ current_room }}"><img src="{{ event.image_dead.url }}" alt="{{ event.image.name }}" class="monster"></a>
+                                        {% else %}
+                                            <img src="{% static 'dungeon_app/img/dungeon/door-open.png' %}" alt="Open Door" class="door-open"> {{ event.name }}<br>
+                                            <img src="{% static 'dungeon_app/img/header/hp.png' %}" alt="Health" class="head_icon"> {{ event.current_vitality}} / {{ event.vitality }}
+                                            <a href="/battle/{{ current_floor }}/{{ current_room }}"><img src="{{ event.image.url }}" alt="{{ event.image.name }}" class="monster"></a>
+                                        {% endif %}
                                     {% endif %}
                                 {% else %}
                                     <a href="/random/{{ current_floor }}/{{ current_room }}"><img src="{% static 'dungeon_app/img/dungeon/door-dark2.png' %}" alt="Door" class="door"></a>
                                 {% endif %}
                             {% else %}
-                            Stuff
+                                    <img src="{% static 'dungeon_app/img/dungeon/door-dark2.png' %}" alt="Door" class="door">
                             {% endif %}
                         </div>
                     {% endfor %}

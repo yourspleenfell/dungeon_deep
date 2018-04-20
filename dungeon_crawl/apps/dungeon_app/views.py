@@ -78,121 +78,142 @@ def submit(request):
         return redirect('/dashboard')
 
 def shop(request):
-    char = Char.objects.get(id=request.session['char_id'])
-    context = {
-        'char' : char,
-        'consumables' : Item.objects.filter(type='consumable'),
-        'weapons' : Item.objects.filter(jobs=char.job)
-    }
-    return render(request, 'dungeon_app/shop.html', context)
+    if request.method == 'POST':
+        char = Char.objects.get(id=request.session['char_id'])
+        item = Item.objects.get(id=request.POST['item'])
+        char.gold -= item.cost
+        char.inventory.add(item)
+        if item.type != 'consumable':
+            Item.objects.equip(char.id, item.id)
+        return redirect('/shop')
+    else:
+        char = Char.objects.get(id=request.session['char_id'])
+        context = {
+            'char' : char,
+            'consumables' : Item.objects.filter(type='consumable'),
+            'weapons' : Item.objects.filter(jobs=char.job).filter(type='weapon'),
+            'armor' : Item.objects.filter(jobs=char.job).filter(type='armor'),
+        }
+        return render(request, 'dungeon_app/shop.html', context)
 
-def dungeon(request, floor, room):
+def dungeon(request, floor, room):        
     char = Char.objects.get(id=request.session['char_id'])
-    user = User.objects.get(id=request.session['user_id'])
-    if 'img_log' not in request.session:
-        request.session['img_log'] = ['']
+    if 'engaged' not in request.session:
+        request.session['engaged'] = False   
+    if 'event' not in request.session:
+        request.session['event'] = (False, False)
     if 'log' not in request.session:
         request.session['log'] = []
-    if 'door_open' not in request.session:
-        request.session['door_open'] = False
+    dungeon = {
+        'current_floor' : floor,
+        'current_room' : room,
+        'rooms' : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+        'char' : char,
+        'inventory' : Item.objects.filter(type='consumable')[:3],
+        'exp_percent' : float(char.experience) / char.exp_to_level * 100,
+        'event' : Item.objects.get(id=1),
+    }
     # if char.current_vitality <= 0:
     #     Char.objects.death(char.id, user.id)
     #     user.active_char = None
     #     user.save()
     #     del request.session['char_id']
     #     return redirect('/create/character')
-    dungeon = {
-        'current_floor' : floor,
-        'current_room' : room,
-        'rooms' : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
-        'char' : char,
-        'exp_percent' : float(char.experience) / char.exp_to_level * 100,
-        'img_log' : request.session['img_log'],
-    }
-    char.current_vitality = 110
-    char.save()
-    return render(request, 'dungeon_app/dungeon.html', dungeon)
+    if request.session['event'][0]:
+        mon = Mon.objects.get(id = request.session['event'][2])
+        dungeon['event'] = mon
+        char.current_vitality = 110
+        char.save()
+        return render(request, 'dungeon_app/dungeon.html', dungeon)
+    elif request.session['event'][1]:
+        char.current_vitality = 110
+        char.save()
+        return render(request, 'dungeon_app/dungeon.html', dungeon)
+    else:
+        char.current_vitality = 110
+        char.save()
+        return render(request, 'dungeon_app/dungeon.html', dungeon)
 
 def random_gen(request, floor, room):
     request.session['door_open'] = True
-    event_chance = random.randint(1, 20)
-    if event_chance > 10:
-        mon = Mon.objects.get(id=random.randint(1, 6))
-        request.session['battle'] = True
-        return redirect(reverse('dungeon:battle', kwargs={'floor': floor, 'room': room}))
-    # elif event_chance < 10:
+    chance = random.randint(1, 3)
+    if int(room) is 10:
+        mon = Mon.objects.get(id = random.randint(7, 10))
+        new_mon = Mon.objects.create(
+            name = mon.name,
+            type = mon.type,
+            vitality = mon.vitality + int(room),
+            current_vitality = mon.vitality + int(room),
+            attack_min = mon.attack_min + int(floor),
+            attack_max = mon.attack_min + int(floor),
+            image = mon.image,
+            image_dead = mon.image_dead,
+        )
+        request.session['event'] = (True, False, new_mon.id)
+        return redirect(reverse('dungeon:dungeon', kwargs={'floor': floor, 'room': room}))
+    if chance > 3:
+        mon = Mon.objects.get(id = random.randint(1, 6))
+        new_mon = Mon.objects.create(
+            name = mon.name,
+            type = mon.type,
+            vitality = mon.vitality + int(room),
+            current_vitality = mon.vitality + int(room),
+            attack_min = mon.attack_min + int(floor),
+            attack_max = mon.attack_min + int(floor),
+            image = mon.image,
+            image_dead = mon.image_dead,
+        )
+        request.session['event'] = (True, False, new_mon.id)
+        return redirect(reverse('dungeon:dungeon', kwargs={'floor': floor, 'room': room}))
+    # elif chance < 10:
     #     if int(room) is 10:
     #         return redirect(reverse('dungeon:dungeon', kwargs={'floor': int(floor) + 1, 'room': 1}))
     #     else:
     #         return redirect(reverse('dungeon:dungeon', kwargs={'floor': floor, 'room': int(room) + 1}))
-    elif event_chance < 10:
-        request.session['treasure'] = True
-        request.session['treasure_clicked'] = False
+    elif chance < 4:
+        request.session['event'] = (False, True, 0)
         return redirect(reverse('dungeon:dungeon', kwargs={'floor': floor, 'room': room}))
 
-def treasure(request, floor, room):
-    request.session['treasure_clicked'] = True
-    char = Char.objects.get(id=request.session['char_id'])
-    event_chance = random.randint(1, 10)
-    if event_chance > 1:
-        char.gold += random.randint(1, 7) + int(floor)
-        char.save()
+def progress(request, floor, room):
+    request.session['event'] = (False, False, 0)
+    request.session['engaged'] = False
     if int(room) is 10:
         return redirect(reverse('dungeon:dungeon', kwargs={'floor': int(floor) + 1, 'room': 1}))
     else:
-        request.session['treasure_clicked'] = False
-        request.session['treasure'] = False
         return redirect(reverse('dungeon:dungeon', kwargs={'floor': floor, 'room': int(room) + 1}))
 
-def battle(request, floor, room):
-    char = Char.objects.get(id=request.session['char_id'])
-    user = User.objects.get(id=request.session['user_id'])
-    if 'vitality' not in request.session:
-        mon = Mon.objects.all()
-        if int(room) < 10:
-            mon = Mon.objects.get(id=random.randint(1, 6))
-        elif int(room) == 10:
-            mon = Mon.objects.get(id=random.randint(7, 10))
-        request.session['vitality'] = mon.vitality + (char.level + int(room))
-        request.session['current_vitality'] = mon.vitality + (char.level + int(room))
-        request.session['monster_name'] = mon.name
-        request.session['attack_min'] = mon.attack_min + (char.level + 1)
-        request.session['attack_max'] = mon.attack_max + (char.level + 2)
-        request.session['monster_image'] = mon.image.url,
-        request.session['monster_type'] = mon.type
-    monster = {
-        'name' : request.session['monster_name'],
-        'vitality': request.session['vitality'],
-        'current_vitality' : request.session['current_vitality'],
-        'attack_min': request.session['attack_min'],
-        'attack_max' : request.session['attack_max'],
-        'type' : request.session['monster_type'],
-    }
-    result = Char.objects.battle(request.session['user_id'], request.session['char_id'], monster, floor, room)
-    request.session['current_vitality'] = result[0]['current_vitality']
-    if request.session['current_vitality'] <= 0:
-        if int(room) == 10:
-            floor = int(floor) + 1
-            room = 1
-        else:
-            room = int(room) + 1
-        del request.session['monster_name']
-        del request.session['vitality']
-        del request.session['current_vitality']
-        del request.session['attack_min']
-        del request.session['attack_max']
-        request.session['battle'] = False
-    request.session.modified = True
+def treasure(request, floor, room):
+    request.session['engaged'] = True
+    chance = random.randint(1, 20) + int(floor)
+    treasure = Item.objects.treasure(request.session['char_id'], floor, chance)
+    print treasure
     return redirect(reverse('dungeon:dungeon', kwargs={'floor': floor, 'room': room}))
+
+def battle(request, floor, room):
+    mon_id = request.session['event'][2]
+    mon = Mon.objects.get(id=mon_id)
+    if not request.session['engaged']:
+        request.session['engaged'] = True
+        battle = Char.objects.battle(request.session['user_id'], request.session['char_id'], mon, floor, room)
+        request.session['event'][2] = battle[0].id
+        return redirect(reverse('dungeon:dungeon', kwargs={'floor': floor, 'room': room}))
+    else:
+        battle = Char.objects.battle(request.session['user_id'], request.session['char_id'], mon, floor, room)
+        if battle[0].current_vitality <= 0:
+            battle[0].current_vitality = 0
+            battle[0].save()
+            return redirect(reverse('dungeon:dungeon', kwargs={'floor': floor, 'room': room}))
+        else:
+            return redirect(reverse('dungeon:dungeon', kwargs={'floor': floor, 'room': room}))   
 
 def model_form_upload(request):
     if request.method == 'POST':
-        form = JobForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('/upload')
+        mon = Mon.objects.get(id=request.POST['mon_id'])
+        mon.image_dead = request.FILES['image']
+        mon.save()
+        return redirect('/upload')
     else:
-        form = JobForm()
-    return render(request, 'dungeon_app/upload.html', {
-        'form' : form
-    })
+        context = {
+            'mobs' : Mon.objects.all()[:10],
+        }
+        return render(request, 'dungeon_app/upload.html', context)

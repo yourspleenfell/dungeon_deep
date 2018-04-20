@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^treasure/(?P<floor>\d+)/(?P<room>\d+)$', views.treasure, name="treasure"),
     url(r'^dungeon/(?P<floor>\d+)/(?P<room>\d+)$', views.dungeon, name="dungeon"),
     url(r'^random/(?P<floor>\d+)/(?P<room>\d+)$', views.random_gen, name="random"),
+    url(r'^progress/(?P<floor>\d+)/(?P<room>\d+)$', views.progress, name="progress"),
     url(r'^shop$', views.shop),
     url(r'^upload$', views.model_form_upload, name="upload"),
 ]

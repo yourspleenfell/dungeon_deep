@@ -9082,3 +9082,16 @@ input[type=range].focused:focus:not(.active)::-ms-thumb {
   left: 3px;
   top: 31px;
 }
+.item {
+  /* position: absolute; */
+  float: left;
+}
+.item-panel {
+  display: inline-block;
+  margin-right: 1%;
+  width: 200px;
+}
+.item-name {
+  margin-left: 5px;
+  size:
+}

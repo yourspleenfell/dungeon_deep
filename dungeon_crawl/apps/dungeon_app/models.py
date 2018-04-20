@@ -175,44 +175,29 @@ class CharManager(models.Manager):
         else:
             char_dmg = (True, random.randint(char.attack_min, char.attack_max))
             user.total_dmg_dealt += char_dmg[1]
-        if monster['type'] == 'normal':
-            mon_hit_chance = random.randint(1, 15)
-            if mon_hit_chance is 1:
-                mon_dmg = (False, 0)
-            else:
-                mon_dmg = (True, (random.randint(monster['attack_min'], monster['attack_max']) - char.defense))
-                monster['current_vitality'] -= char_dmg[1]
-                if mon_dmg > 0:
-                    char.current_vitality -= mon_dmg[1]
-                    char.save()
-                    user.total_dmg_taken += mon_dmg[1]
-                    user.save()
-                if monster['current_vitality'] <= 0:
+        mon_hit_chance = random.randint(1, 15)
+        if mon_hit_chance is 1:
+            mon_dmg = (False, 0)
+        else:
+            mon_dmg = (True, (random.randint(monster.attack_min, monster.attack_max) - char.defense))
+            monster.current_vitality -= char_dmg[1]
+            monster.save()
+            if mon_dmg > 0:
+                char.current_vitality -= mon_dmg[1]
+                char.save()
+                user.total_dmg_taken += mon_dmg[1]
+                user.save()
+            if monster.current_vitality <= 0:
+                if monster.type == 'normal':
                     char.experience += random.randint(10, 20)
-                    char.num_monsters_killed += 1
-                    char.monsters_killed += monster['name'] + ', '
+                    char.monsters_killed.add(monster)
                     user.total_monsters_killed += 1
                     char.save()
                     user.save()
-                if char.experience >= char.exp_to_level:
-                    Char.objects.level_up(char.id)
-        elif monster['type'] == 'boss':
-            mon_hit_chance = random.randint(1, 15)
-            if mon_hit_chance is 1:
-                mon_dmg = (False, 0)
-            else:
-                mon_dmg = (True, (random.randint(monster['attack_min'], monster['attack_max']) - char.defense))
-                monster['current_vitality'] -= char_dmg[1]
-                if mon_dmg > 0:
-                    char.current_vitality -= mon_dmg[1]
-                    char.save()
-                    user.total_dmg_taken += mon_dmg[1]
-                    user.save()
-                if monster['current_vitality'] <= 0:
+                elif monster.type == 'boss':
                     char.experience += random.randint(100, 200)
-                    char.num_monsters_killed += 1
-                    char.monsters_killed += monster['name'] + ', '
-                    user.total_bosses_killed += 1
+                    char.monsters_killed.add(monster)
+                    user.total_monsters_killed += 1
                     char.save()
                     user.save()
                 if char.experience >= char.exp_to_level:
@@ -223,6 +208,93 @@ class CharManager(models.Manager):
         char = Char.objects.get(id=char_id)
         user.characters.add(char)
         return user
+
+class ItemManager(models.Manager):
+    def treasure(self, char_id, floor, chance):
+        print chance
+        char = Char.objects.get(id = char_id)
+        item = False
+        arch = Job.objects.get(name = 'Archer')
+        kng = Job.objects.get(name = 'Knight')
+        monk = Job.objects.get(name = 'Monk')
+        wiz = Job.objects.get(name = 'Wizard')
+        if chance > 20:
+            reward = self.get(id = 4)
+            new_item = Item.objects.create(
+                name = reward.name,
+                cost = reward.cost,
+                type = reward.type,
+                vitality = reward.vitality,
+                defense = reward.defense,
+                attack_max = reward.attack_max,
+                attack_min = reward.attack_min,
+                image = reward.image,
+            )
+            new_item.jobs.add(arch, kng, monk, wiz)
+            new_item.save()
+            item = True
+            char.inventory.add(new_item)
+        elif chance is 20:
+            reward = self.get(id=3)
+            new_item = Item.objects.create(
+                name = reward.name,
+                cost = reward.cost,
+                type = reward.type,
+                vitality = reward.vitality,
+                defense = reward.defense,
+                attack_max = reward.attack_max,
+                attack_min = reward.attack_min,
+                image = reward.image,
+            )
+            new_item.jobs.add(arch, kng, monk, wiz)
+            new_item.save()
+            item = True
+            char.inventory.add(new_item)
+        elif chance < 19 and chance > 16:
+            reward = self.get(id=2)
+            new_item = Item.objects.create(
+                name = reward.name,
+                cost = reward.cost,
+                type = reward.type,
+                vitality = reward.vitality,
+                defense = reward.defense,
+                attack_max = reward.attack_max,
+                attack_min = reward.attack_min,
+                image = reward.image,
+            )
+            new_item.jobs.add(arch, kng, monk, wiz)
+            new_item.save()
+            item = True
+            char.inventory.add(new_item)
+        elif chance > 1 and chance < 19:
+            reward = random.randint(15, 30) + int(floor)
+            char.gold += reward
+        elif chance > 10 and chance < 16:
+            reward = random.randint(10, 20) + int(floor)
+            char.gold += reward
+        elif chance < 11:
+            reward = random.randint(5, 15) + int(floor)
+            char.gold += reward
+        char.save()
+        return (item, reward)
+    def shop(self, char_id, item_id):
+        pass
+    def equip(self, char_id, item_id):
+        char = Char.objects.get(id=char_id)
+        item = Item.objects.get(id=item_id)
+        char.max_vitality += item.vitality
+        char.current_vitality += item.vitality
+        char.attack_min += item.attack_min
+        char.attack_max += item.attack_max
+        char.defense += item.defense
+        char.inventory.remove(item)
+        if item.type == 'weapon':
+            char.weapon = item
+            char.save()
+        elif item.type == 'armor':
+            char.armor = item
+            char.save()
+        return char
 
 class JobManager(models.Manager):
     def ability(self, char_id):
@@ -241,24 +313,25 @@ class Mon(models.Model):
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=255)
     vitality = models.IntegerField()
+    current_vitality = models.IntegerField()
     attack_min = models.IntegerField()
     attack_max = models.IntegerField()
     image = models.ImageField(upload_to='monsters')
+    image_dead = models.ImageField(upload_to='monsters', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-
 
 class Item(models.Model):
     name = models.CharField(max_length = 255)
     cost = models.IntegerField()
     type = models.CharField(max_length=255)
-    jobs = models.ManyToManyField(Job, related_name="items")
+    jobs = models.ManyToManyField(Job, related_name="items", blank=True)
     vitality = models.IntegerField()
     defense = models.IntegerField()
     attack_max = models.IntegerField()
     attack_min = models.IntegerField()
     image = models.ImageField(upload_to='items')
+    objects = ItemManager()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -276,9 +349,8 @@ class Char(models.Model):
     gold = models.IntegerField()
     armor = models.ForeignKey(Item, related_name="armor_wearers")
     weapon = models.ForeignKey(Item, related_name="weapon_wielders")
-    inventory = models.ManyToManyField(Item, related_name="characters")
-    num_monsters_killed = models.IntegerField(default=0)
-    monsters_killed = models.TextField(blank=True, null=True)
+    inventory = models.ManyToManyField(Item, related_name="characters", blank=True)
+    monsters_killed = models.ManyToManyField(Mon, related_name="slayers", blank=True)
     objects = CharManager()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -295,6 +367,7 @@ class User(models.Model):
     total_dmg_taken = models.IntegerField(default=0)
     total_monsters_killed = models.IntegerField(default=0)
     total_bosses_killed = models.IntegerField(default=0)
+    score = models.IntegerField(default=0)
     objects = UserManager()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
